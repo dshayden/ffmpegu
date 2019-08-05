@@ -19,6 +19,6 @@ setup(name='ffmpegu',
   author_email='dshayden@mit.edu',
   license='MIT',
   packages=['ffmpegu'],
-  install_requires=['numpy', 'du'],
+  install_requires=['numpy', 'du', 'ffmpeg-python'],
   include_package_data=True,
   zip_safe=False)

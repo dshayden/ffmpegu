@@ -47,5 +47,33 @@ def VideoExtractFramesEvenlySpaced(_file, outPath, nFrames, **kwargs):
       rc += VideoExtractFrame(_file, names[n], times[n], qscale=qscale)
     return rc
 
+def GetRGBFrameByTimeNumpy(_file, seconds, pix_fmt='rgb24'):
+  import ffmpeg, numpy as np
+  w, h = VideoGetWidthHeight(_file)
+
+  out, _ = (
+    ffmpeg
+    .input(_file, ss=seconds, loglevel='panic')
+    .filter('select', 'gte(n,0)')
+    .output('pipe:', vframes=1, format='rawvideo', pix_fmt=pix_fmt)
+    .run(capture_stdout=True)
+  )
+  frame = np.frombuffer(out, np.uint8).reshape(h, w, 3)
+  return frame
+
+def GetRGBFrameByNumberNumpy(_file, n, pix_fmt='rgb24'):
+  import ffmpeg, numpy as np
+  w, h = VideoGetWidthHeight(_file)
+
+  out, _ = (
+    ffmpeg
+    .input(_file)
+    .filter('select', f'gte(n,{n})')
+    .output('pipe:', vframes=1, format='rawvideo', pix_fmt=pix_fmt)
+    .run(capture_stdout=True, capture_stderr=True)
+  )
+  frame = np.frombuffer(out, np.uint8).reshape(h, w, 3)
+  return frame
+
 def _bytes2str(b): return b.decode('utf-8')
 def _run(cmd): return _bytes2str(co(cmd, shell=True))
